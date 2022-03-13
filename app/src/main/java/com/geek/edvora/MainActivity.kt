@@ -5,9 +5,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
+import com.geek.edvora.Service.RideAPI
 import com.geek.edvora.adapter.MainFragmentPagerAdapter
 import com.geek.edvora.databinding.ActivityMainBinding
-import com.geek.edvora.utils.RideApplication
+import com.geek.edvora.repository.RideRepository
+import com.geek.edvora.utils.RetrofitHelper
 import com.geek.edvora.viewModels.MainViewModel
 import com.geek.edvora.viewModels.MainViewModelFactory
 import com.google.android.material.tabs.TabLayout
@@ -23,7 +25,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this,R.layout.activity_main)
         supportActionBar?.setDisplayShowTitleEnabled(false)
-        val repository = (application as RideApplication).RideRepo
+        val service = RetrofitHelper().getInstance().create(RideAPI::class.java)
+        val repository = RideRepository(service,this)
         viewModel = ViewModelProvider(this, MainViewModelFactory(repository))[MainViewModel::class.java]
         viewModel.userData.observe(this){
             binding.toolbar.textView.text = it.name

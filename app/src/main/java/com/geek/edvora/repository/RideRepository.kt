@@ -9,12 +9,12 @@ import com.geek.edvora.Service.RideAPI
 import com.geek.edvora.adapter.MainRCVAdapter
 import com.geek.edvora.dataModel.RideDataItem
 import com.geek.edvora.dataModel.UserData
-import com.geek.edvora.db.RideDatabase
 import com.geek.edvora.utils.NetworkUtils
+import java.text.SimpleDateFormat
+import java.util.*
 
 class RideRepository(
     private val api: RideAPI,
-    private val RideDB: RideDatabase,
     private val context: Context
 ) {
     private val RideData = MutableLiveData<List<RideDataItem>>()
@@ -50,50 +50,42 @@ class RideRepository(
         }
     }
 
-    suspend fun getRideData(tab: Int) {
-        val currentTime = System.currentTimeMillis()
+    suspend fun getRideData() {
         if (NetworkUtils.isInternetAvailable(context)) {
             lateinit var rideData: List<RideDataItem>
-            lateinit var finalrideData: List<RideDataItem>
+            lateinit var finalRideData: List<RideDataItem>
             val result = api.getRideDetails()
             if (result.body() != null) {
                 rideData = result.body()!!
-                RideDB.clearAllTables()
                 rideData.forEach {
-                    Log.e("TAG", "getRideData: $it")
-                    it.setDistance(MainRCVAdapter.getMinDistanceFrom(it.station_path,_userData.value!!.station_code))
+                    it.setDistance(MainRCVAdapter.getMinDistanceFrom(
+                        it.station_path
+                        ,_userData.value!!.station_code)
+                    )
+                    it.setFormattedDate(getDate(it.date)!!)
                 }
-                RideDB.dao().insertRide(rideData)
-
-                if (tab == -1) {
-                    finalrideData = RideDB.dao().getTodayRides()
-                    finalrideData.sortedBy {
-                        it.distanceFromUser
-                    }
-                }
-                if (tab == 0)
-                    finalrideData = RideDB.dao().getFutureRides(currentTime)
-                if (tab == 1)
-                    finalrideData = RideDB.dao().getPastRides(currentTime)
-                Log.e("TAG", "getRideData: Putting $rideData", )
                 RideData.postValue(rideData)
             }
         } else {
-            lateinit var rideData: List<RideDataItem>
-            if (tab == -1) {
-                rideData = RideDB.dao().getTodayRides()
-                Log.e("TAG", "getRideData: ${rideData[0].distanceFromUser}")
-
-                rideData.sortedBy {
-                    it.distanceFromUser
-                }
-            }
-//            if (tab == 0)
-//                rideData = RideDB.dao().getFutureRides(currentTime)
-//            if (tab == 1)
-//                rideData = RideDB.dao().getPastRides(currentTime)
-            RideData.postValue(rideData)
+//            lateinit var rideData: List<RideDataItem>
+//            if (tab == -1) {
+//                rideData = RideDB.dao().getTodayRides()
+//                Log.e("TAG", "getRideData: ${rideData[0].distanceFromUser}")
+//
+//                rideData.sortedBy {
+//                    it.distanceFromUser
+//                }
+//            }
+////            if (tab == 0)
+////                rideData = RideDB.dao().getFutureRides(currentTime)
+////            if (tab == 1)
+////                rideData = RideDB.dao().getPastRides(currentTime)
+//            RideData.postValue(rideData)
         }
 
+    }
+
+    fun getDate(dateStr: String): Date? {
+        return SimpleDateFormat("MM/dd/yyyy HH:mm a", Locale.getDefault()).parse(dateStr)
     }
 }

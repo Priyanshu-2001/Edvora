@@ -10,7 +10,6 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:name=".utils.RideApplication"
         android:theme="@style/Theme.Edvora">
         <activity
             android:name=".MainActivity"
