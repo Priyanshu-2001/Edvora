@@ -1,8 +1,8 @@
 package com.geek.edvora.ui
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.View
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.geek.edvora.R
 import com.geek.edvora.Service.RideAPI
@@ -31,14 +31,17 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentHomeBinding.bind(view)
-//        val repository = (requireActivity().application as RideApplication).RideRepo
+        binding.progressCircular.visibility = View.VISIBLE
         val service = RetrofitHelper().getInstance().create(RideAPI::class.java)
         val repository = RideRepository(service,requireContext())
         viewModel = ViewModelProvider(this, RideViewModelFactory(repository, tab = tab!!))[RideViewModel::class.java]
         viewModel.finalRideData.observe(viewLifecycleOwner) {
             viewModel.userData.observe(viewLifecycleOwner){userData->
-                adapter = MainRCVAdapter(it,
-                    userData)
+                binding.progressCircular.visibility = View.GONE
+                adapter = MainRCVAdapter(
+                    it,
+                    userData
+                )
                 binding.MainRCV.adapter = adapter
             }
         }

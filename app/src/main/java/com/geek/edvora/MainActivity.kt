@@ -34,17 +34,22 @@ class MainActivity : AppCompatActivity() {
                 .load(it.url)
                 .into(binding.toolbar.profileImage)
         }
-        
-        val adapter = MainFragmentPagerAdapter(supportFragmentManager,binding.tabLayout.tabCount)
+
+        val adapter = MainFragmentPagerAdapter(supportFragmentManager, binding.tabLayout.tabCount)
         binding.viewPager.adapter = adapter
         binding.tabLayout.addOnTabSelectedListener(object : OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 binding.viewPager.setCurrentItem(tab.position, true)
                 if (tab.position == 0 || tab.position == 1 || tab.position == 3) adapter.notifyDataSetChanged()
             }
+
             override fun onTabUnselected(tab: TabLayout.Tab) {}
             override fun onTabReselected(tab: TabLayout.Tab) {}
         })
+
+        binding.filterBtn.setOnClickListener {
+
+        }
         binding.viewPager.addOnPageChangeListener(TabLayoutOnPageChangeListener(binding.tabLayout))
     }
 }
