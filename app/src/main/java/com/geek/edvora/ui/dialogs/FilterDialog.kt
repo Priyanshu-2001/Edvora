@@ -10,16 +10,13 @@ import android.widget.ArrayAdapter
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import com.geek.edvora.R
-import com.geek.edvora.Service.RideAPI
 import com.geek.edvora.databinding.FilterWindowBinding
-import com.geek.edvora.interfaceUtils.FilterBtnInterface
-import com.geek.edvora.repository.RideRepository
-import com.geek.edvora.utils.RetrofitHelper
+import com.geek.edvora.utils.MyApplication
 import com.geek.edvora.viewModels.MainViewModel
 import com.geek.edvora.viewModels.MainViewModelFactory
 
 
-class FilterDialog : DialogFragment(R.layout.filter_window), FilterBtnInterface {
+class FilterDialog : DialogFragment(R.layout.filter_window) {
 
     lateinit var binding: FilterWindowBinding
     lateinit var viewModel: MainViewModel
@@ -33,8 +30,7 @@ class FilterDialog : DialogFragment(R.layout.filter_window), FilterBtnInterface 
         val params: WindowManager.LayoutParams = dialog!!.window!!.attributes
         params.y = 250
         dialog!!.window!!.attributes = params
-        val service = RetrofitHelper().getInstance().create(RideAPI::class.java)
-        val repository = RideRepository(service, requireContext())
+        val repository = (requireActivity().application as MyApplication).studentRepo
         viewModel =
             ViewModelProvider(
                 requireActivity(),
@@ -119,14 +115,4 @@ class FilterDialog : DialogFragment(R.layout.filter_window), FilterBtnInterface 
         }
 
     }
-
-    override fun applyFilterState(state: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun applyFilterCity(city: String) {
-        TODO("Not yet implemented")
-    }
-
-
 }

@@ -69,8 +69,8 @@ class RideRepository(
                     while (userData.value == null)
                         delay(200)
                     performUtilityChanges(rideData)
-                    rideData[0].cityList.addAll(cityList)
-                    rideData[0].stateList.addAll(stateList)
+                    rideData[0].cityList = cityList
+                    rideData[0].stateList = stateList
                 }
                 rideDataDetails.postValue(rideData)
             }

@@ -18,11 +18,15 @@ class RideViewModel(
 ) : ViewModel() {
 
     private var rideData = MutableLiveData<List<RideDataItem>>()
+    var isStateFilteredApplied = false
+    var isCityFilteredApplied = false
+    var StateFilter = ""
+    var CityFilter = ""
 
     init {
         GlobalScope.launch(Dispatchers.IO) {
-            repo.getUserData()
-            repo.getRideData()
+//            repo.getUserData()
+//            repo.getRideData()
         }
         validateData()
     }

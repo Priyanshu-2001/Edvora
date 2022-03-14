@@ -1,6 +1,5 @@
 package com.geek.edvora.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
@@ -12,12 +11,17 @@ import com.geek.edvora.dataModel.UserData
 import com.geek.edvora.databinding.SinlgeMainRideRcvBinding
 import kotlin.math.absoluteValue
 
-class MainRCVAdapter(private val RideData: List<RideDataItem>, private val userData: UserData) :
+class MainRCVAdapter(private var RideData: List<RideDataItem>, private val userData: UserData) :
     RecyclerView.Adapter<MainRCVAdapter.RideViewHolder>() {
 
     class RideViewHolder(private val bind: SinlgeMainRideRcvBinding) :
         RecyclerView.ViewHolder(bind.root) {
         var binding: SinlgeMainRideRcvBinding = bind
+    }
+
+    fun applyFilter(RideData: List<RideDataItem>) {
+        this.RideData = RideData
+        notifyDataSetChanged()
     }
 
 
