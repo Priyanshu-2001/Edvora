@@ -12,19 +12,26 @@ data class RideDataItem(
     val origin_station_code: Int = 0,
     val state: String,
     val station_path: List<Int>
-){
-    fun getOriginString() : String{
+) {
+    var formatDate: Date = Date()
+    var distanceFromUser: Int = 0
+    var stateList = mutableSetOf<String>()
+    var cityList = mutableSetOf<String>()
+
+    fun getOriginString(): String {
         return origin_station_code.toString()
     }
-    fun getIDString() : String{
+
+    fun getIDString(): String {
         return id.toString()
     }
-    var FormatDate : Date = Date()
 
-    fun setFormattedDate(d: Date){
-        FormatDate = d
+    fun setFormattedDate(d: Date) {
+        formatDate = d
     }
 
-    var distanceFromUser : Int = 0
-    fun setDistance(d : Int){distanceFromUser = d}
+    fun setDistance(d: Int) {
+        distanceFromUser = d
+    }
+
 }

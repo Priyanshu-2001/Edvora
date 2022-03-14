@@ -1,8 +1,9 @@
 package com.geek.edvora.viewModels
 
-import android.util.Log
-import androidx.lifecycle.*
-import androidx.lifecycle.Observer
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.geek.edvora.dataModel.RideDataItem
 import com.geek.edvora.dataModel.UserData
 import com.geek.edvora.repository.RideRepository
@@ -35,7 +36,7 @@ class RideViewModel(
         repo.rideDataList.observeForever {tempRideData->
             if (tab == -1) {
                 val temp = tempRideData.filter {
-                    it.FormatDate.after(
+                    it.formatDate.after(
                         Date()
                     )
                 }
@@ -46,13 +47,13 @@ class RideViewModel(
             }
             if (tab == 0) {
                 val temp = tempRideData.filter {
-                    it.FormatDate.after(Date())
+                    it.formatDate.after(Date())
                 }
                 rideData.postValue(temp)
             }
             if (tab == 1) {
                 val temp = tempRideData.filter {
-                    it.FormatDate.before(Date())
+                    it.formatDate.before(Date())
                 }
                 rideData.postValue(temp)
 
@@ -63,10 +64,11 @@ class RideViewModel(
 
     val userData: LiveData<UserData>
         get() {
-            return repo._userData
+            return repo.userData
         }
 }
 
+@Suppress("UNCHECKED_CAST")
 class RideViewModelFactory(private val repo: RideRepository, private val tab: Int) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {

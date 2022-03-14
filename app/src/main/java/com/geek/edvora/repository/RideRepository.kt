@@ -10,6 +10,7 @@ import com.geek.edvora.adapter.MainRCVAdapter
 import com.geek.edvora.dataModel.RideDataItem
 import com.geek.edvora.dataModel.UserData
 import com.geek.edvora.utils.NetworkUtils
+import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -17,16 +18,18 @@ class RideRepository(
     private val api: RideAPI,
     private val context: Context
 ) {
-    private val RideData = MutableLiveData<List<RideDataItem>>()
-    private val UserDetailsData = MutableLiveData<UserData>()
+    private val rideDataDetails = MutableLiveData<List<RideDataItem>>()
+    private val userDetailsData = MutableLiveData<UserData>()
+    private val stateList = mutableSetOf<String>()
+    private val cityList = mutableSetOf<String>()
 
     val rideDataList: LiveData<List<RideDataItem>>
         get() {
-            return RideData
+            return rideDataDetails
         }
-    val _userData: LiveData<UserData>
+    val userData: LiveData<UserData>
         get() {
-            return UserDetailsData
+            return userDetailsData
         }
 
     suspend fun getUserData() {
@@ -34,7 +37,7 @@ class RideRepository(
             val result = api.getUserDetails()
             if (result.body() != null) {
                 Log.e("User data ", "${result.body()}")
-                UserDetailsData.postValue(result.body())
+                userDetailsData.postValue(result.body())
                 val pref = context.getSharedPreferences("UserDetail", MODE_PRIVATE).edit()
                 pref.putString("name", result.body()!!.name)
                 pref.putString("url", result.body()!!.url)
@@ -46,46 +49,52 @@ class RideRepository(
             val name = pref.getString("name", "")
             val station_code = pref.getInt("station_code", 0)
             val url = pref.getString("url", "")
-            UserDetailsData.postValue(UserData(name!!, station_code, url!!))
+            userDetailsData.postValue(UserData(name!!, station_code, url!!))
         }
     }
 
     suspend fun getRideData() {
+        Log.e("TAG", "getRideData: called")
         if (NetworkUtils.isInternetAvailable(context)) {
             lateinit var rideData: List<RideDataItem>
-            lateinit var finalRideData: List<RideDataItem>
             val result = api.getRideDetails()
             if (result.body() != null) {
                 rideData = result.body()!!
-                rideData.forEach {
-                    it.setDistance(MainRCVAdapter.getMinDistanceFrom(
-                        it.station_path
-                        ,_userData.value!!.station_code)
-                    )
-                    it.setFormattedDate(getDate(it.date)!!)
+                if (userData.value != null) {
+                    performUtilityChanges(rideData)
+                    rideData[0].cityList = cityList
+                    rideData[0].stateList = stateList
+                } else {
+                    getUserData()
+                    while (userData.value == null)
+                        delay(200)
+                    performUtilityChanges(rideData)
+                    rideData[0].cityList.addAll(cityList)
+                    rideData[0].stateList.addAll(stateList)
                 }
-                RideData.postValue(rideData)
+                rideDataDetails.postValue(rideData)
             }
         } else {
-//            lateinit var rideData: List<RideDataItem>
-//            if (tab == -1) {
-//                rideData = RideDB.dao().getTodayRides()
-//                Log.e("TAG", "getRideData: ${rideData[0].distanceFromUser}")
-//
-//                rideData.sortedBy {
-//                    it.distanceFromUser
-//                }
-//            }
-////            if (tab == 0)
-////                rideData = RideDB.dao().getFutureRides(currentTime)
-////            if (tab == 1)
-////                rideData = RideDB.dao().getPastRides(currentTime)
-//            RideData.postValue(rideData)
+            //TODO offile data
         }
 
     }
 
-    fun getDate(dateStr: String): Date? {
+    private fun getDate(dateStr: String): Date? {
         return SimpleDateFormat("MM/dd/yyyy HH:mm a", Locale.getDefault()).parse(dateStr)
     }
+
+    private fun performUtilityChanges(rideData: List<RideDataItem>) {
+        rideData.forEach {
+            it.setDistance(
+                MainRCVAdapter.getMinDistanceFrom(
+                    it.station_path, userData.value!!.station_code
+                )
+            )
+            it.setFormattedDate(getDate(it.date)!!)
+            stateList.add(it.state)
+            cityList.add(it.city)
+        }
+    }
+
 }

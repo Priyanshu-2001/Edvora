@@ -1,5 +1,6 @@
 package com.geek.edvora.interfaceUtils
 
 interface FilterBtnInterface {
-    fun applyFilter()
+    fun applyFilterState(state: String)
+    fun applyFilterCity(city: String)
 }
