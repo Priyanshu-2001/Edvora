@@ -62,6 +62,7 @@ class FilterDialog : DialogFragment(R.layout.filter_window) {
                 viewModel.SelectedCity.let {
                     if (it.value != position) {
                         Log.e("TAG onViewCreated", "onItemSelected: ${it.value} , $position")
+                        viewModel.SelectedState.value = 0
                         it.value = position
                     }
                 }
@@ -97,6 +98,7 @@ class FilterDialog : DialogFragment(R.layout.filter_window) {
                 viewModel.SelectedState.let {
                     if (it.value != position) {
                         Log.e("TAG onViewCreated", "onItemSelected: ${it.value} , $position")
+                        viewModel.SelectedCity.value = 0
                         it.value = position
                     }
                 }
