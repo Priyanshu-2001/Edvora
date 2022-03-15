@@ -1,5 +1,6 @@
 package com.geek.edvora.ui
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -21,6 +22,7 @@ import com.geek.edvora.viewModels.RideViewModelFactory
 
 private const val ARG_PARAM1 = "param1"
 
+@SuppressLint("NotifyDataSetChanged")
 class HomeFragment : Fragment(R.layout.fragment_home), FilterBtnInterface, FilterBtnInterface1,
     FilterBtnInterface0 {
     private var tab: Int? = null
@@ -187,6 +189,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), FilterBtnInterface, Filte
         binding.progressCircular.visibility = View.GONE
         adapter.notifyDataSetChanged()
     }
+
 
     override fun applyFilterCity0(city: String) {
         binding.progressCircular.visibility = View.VISIBLE

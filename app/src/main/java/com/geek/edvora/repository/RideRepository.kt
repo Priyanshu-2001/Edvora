@@ -18,6 +18,7 @@ class RideRepository(
     private val api: RideAPI,
     private val context: Context
 ) {
+    var rideData: List<RideDataItem>? = null
     private val rideDataDetails = MutableLiveData<List<RideDataItem>>()
     private val userDetailsData = MutableLiveData<UserData>()
     private val stateList = mutableSetOf<String>()
@@ -54,30 +55,34 @@ class RideRepository(
     }
 
     suspend fun getRideData() {
+
         Log.e("TAG", "getRideData: called")
-        if (NetworkUtils.isInternetAvailable(context)) {
-            lateinit var rideData: List<RideDataItem>
-            val result = api.getRideDetails()
-            if (result.body() != null) {
-                rideData = result.body()!!
-                if (userData.value != null) {
-                    performUtilityChanges(rideData)
-                    rideData[0].cityList = cityList
-                    rideData[0].stateList = stateList
-                } else {
-                    getUserData()
-                    while (userData.value == null)
-                        delay(200)
-                    performUtilityChanges(rideData)
-                    rideData[0].cityList = cityList
-                    rideData[0].stateList = stateList
+        if (rideData == null) {
+            rideData = mutableListOf()
+            if (NetworkUtils.isInternetAvailable(context)) {
+                val result = api.getRideDetails()
+                if (result.body() != null) {
+                    rideData = result.body()!!
+                    if (userData.value != null) {
+                        performUtilityChanges((rideData as List))
+                        rideData!![0].cityList = cityList
+                        rideData!![0].stateList = stateList
+                    } else {
+                        getUserData()
+                        while (userData.value == null)
+                            delay(200)
+                        performUtilityChanges(rideData!!)
+                        rideData!![0].cityList = cityList
+                        rideData!![0].stateList = stateList
+                    }
+                    rideDataDetails.postValue(rideData)
                 }
-                rideDataDetails.postValue(rideData)
+            } else {
+                //TODO offile data
             }
         } else {
-            //TODO offile data
+            rideDataDetails.postValue(rideData)
         }
-
     }
 
     private fun getDate(dateStr: String): Date? {
