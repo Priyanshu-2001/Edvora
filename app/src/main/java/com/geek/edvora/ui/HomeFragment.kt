@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.geek.edvora.MainActivity
@@ -65,7 +64,6 @@ class HomeFragment : Fragment(R.layout.fragment_home), FilterBtnInterface, Filte
             }
         }
         if (viewModel.isStateFilteredApplied) {
-            Toast.makeText(context, "$viewModel.StateFilter", Toast.LENGTH_SHORT).show()
             if (viewModel.StateFilter != "State") {
                 viewModel.isStateFilteredApplied = true
                 binding.progressCircular.visibility = View.GONE
@@ -111,7 +109,6 @@ class HomeFragment : Fragment(R.layout.fragment_home), FilterBtnInterface, Filte
 
     override fun applyFilterState(state: String) {
         if (tab == 0)
-            Toast.makeText(context, state, Toast.LENGTH_SHORT).show()
         if (state != "State") {
             viewModel.isStateFilteredApplied = true
             binding.progressCircular.visibility = View.GONE
@@ -144,7 +141,6 @@ class HomeFragment : Fragment(R.layout.fragment_home), FilterBtnInterface, Filte
 
     override fun applyFilterState1(state: String) {
         if (tab == 0)
-            Toast.makeText(context, state, Toast.LENGTH_SHORT).show()
         if (state != "State") {
             viewModel.isStateFilteredApplied = true
             binding.progressCircular.visibility = View.GONE
@@ -176,7 +172,6 @@ class HomeFragment : Fragment(R.layout.fragment_home), FilterBtnInterface, Filte
 
     override fun applyFilterState0(state: String) {
         if (tab == 0)
-            Toast.makeText(context, state, Toast.LENGTH_SHORT).show()
         if (state != "State") {
             viewModel.isStateFilteredApplied = true
             binding.progressCircular.visibility = View.GONE
